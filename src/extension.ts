@@ -15,7 +15,7 @@ import { IgnoreChecker } from "./ignore";
 import { IUploader } from "./uploader";
 import { SftpUploader } from "./sftp-uploader";
 import { FtpUploader } from "./ftp-uploader";
-import { toRemotePath, toLocalPath, toRelativePath } from "./utils";
+import { toRemotePath, toLocalPath, toRelativePath, collectFiles, collectRemoteFiles } from "./utils";
 
 let logger: Logger;
 let statusBar: StatusBar;
@@ -427,34 +427,3 @@ function handleUploadError(config: PushUpConfig, message: string): void {
   }
 }
 
-function collectFiles(dir: string, config: PushUpConfig, checker: IgnoreChecker): string[] {
-  const results: string[] = [];
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
-  for (const entry of entries) {
-    const fullPath = path.join(dir, entry.name);
-    const relative = toRelativePath(fullPath, config);
-    if (checker.isIgnored(relative)) {
-      continue;
-    }
-    if (entry.isDirectory()) {
-      results.push(...collectFiles(fullPath, config, checker));
-    } else if (entry.isFile()) {
-      results.push(fullPath);
-    }
-  }
-  return results;
-}
-
-async function collectRemoteFiles(uploader: IUploader, remotePath: string): Promise<string[]> {
-  const results: string[] = [];
-  const entries = await uploader.listDir(remotePath);
-  for (const entry of entries) {
-    const fullRemote = remotePath.replace(/\/+$/, "") + "/" + entry.name;
-    if (entry.isDirectory) {
-      results.push(...(await collectRemoteFiles(uploader, fullRemote)));
-    } else {
-      results.push(fullRemote);
-    }
-  }
-  return results;
-}

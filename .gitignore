@@ -2,3 +2,5 @@ node_modules/
 dist/
 out/
 *.vsix
+.claude/settings.local.json
+coverage/

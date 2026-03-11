@@ -88,6 +88,9 @@
     "compile": "npm run check-types && node esbuild.js",
     "check-types": "tsc --noEmit",
     "watch": "node esbuild.js --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "package": "npm run compile && npx @vscode/vsce package",
     "vscode:prepublish": "npm run compile"
   },
@@ -101,6 +104,8 @@
     "@types/ssh2-sftp-client": "^9.0.4",
     "@types/picomatch": "^3.0.1",
     "esbuild": "^0.24.0",
-    "typescript": "^5.7.0"
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0",
+    "@vitest/coverage-v8": "^3.0.0"
   }
 }

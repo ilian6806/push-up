@@ -1,0 +1,106 @@
+{
+  "name": "pushup",
+  "displayName": "PushUp",
+  "description": "Auto-upload files to FTP/SFTP servers on save, with manual upload/download of files and folders.",
+  "version": "0.1.0",
+  "publisher": "ilian-iliev",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "ftp",
+    "sftp",
+    "upload",
+    "deploy",
+    "remote"
+  ],
+  "activationEvents": [
+    "workspaceContains:**/.pushup.json"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "pushup.init",
+        "title": "PushUp: Initialize Configuration"
+      },
+      {
+        "command": "pushup.uploadFile",
+        "title": "PushUp: Upload File"
+      },
+      {
+        "command": "pushup.downloadFile",
+        "title": "PushUp: Download File"
+      },
+      {
+        "command": "pushup.uploadFolder",
+        "title": "PushUp: Upload Folder"
+      },
+      {
+        "command": "pushup.downloadFolder",
+        "title": "PushUp: Download Folder"
+      },
+      {
+        "command": "pushup.showOutput",
+        "title": "PushUp: Show Output"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "pushup.uploadFile",
+          "when": "!explorerResourceIsFolder",
+          "group": "pushup@1"
+        },
+        {
+          "command": "pushup.downloadFile",
+          "when": "!explorerResourceIsFolder",
+          "group": "pushup@2"
+        },
+        {
+          "command": "pushup.uploadFolder",
+          "when": "explorerResourceIsFolder",
+          "group": "pushup@1"
+        },
+        {
+          "command": "pushup.downloadFolder",
+          "when": "explorerResourceIsFolder",
+          "group": "pushup@2"
+        }
+      ],
+      "editor/title/context": [
+        {
+          "command": "pushup.uploadFile",
+          "group": "pushup@1"
+        },
+        {
+          "command": "pushup.downloadFile",
+          "group": "pushup@2"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "compile": "npm run check-types && node esbuild.js",
+    "check-types": "tsc --noEmit",
+    "watch": "node esbuild.js --watch",
+    "package": "npm run compile && npx @vscode/vsce package",
+    "vscode:prepublish": "npm run compile"
+  },
+  "dependencies": {
+    "ssh2-sftp-client": "^11.0.0",
+    "basic-ftp": "^5.0.5",
+    "picomatch": "^4.0.2"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/ssh2-sftp-client": "^9.0.4",
+    "@types/picomatch": "^3.0.1",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.7.0"
+  }
+}

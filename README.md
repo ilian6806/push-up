@@ -72,6 +72,10 @@ Create a `.pushup.json` in your project root:
 - **Files not uploading on save** — Verify `uploadOnSave` is `true` and the file doesn't match an ignore pattern.
 - **Password prompt keeps appearing** — Passwords are cached for the session. If the connection drops, you may be re-prompted.
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for dev setup and guidelines.
+
 ## License
 
 MIT

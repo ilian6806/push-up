@@ -6,3 +6,4 @@ esbuild.js
 *.map
 .gitignore
 .claude/
+.vscode/

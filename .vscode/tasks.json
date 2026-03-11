@@ -4,7 +4,23 @@
     {
       "type": "npm",
       "script": "watch",
-      "problemMatcher": "$esbuild-watch",
+      "problemMatcher": {
+        "owner": "esbuild",
+        "fileLocation": "absolute",
+        "pattern": {
+          "regexp": "^>.+:(\\d+):(\\d+):\\s+(warning|error):\\s+(.+)$",
+          "file": 0,
+          "line": 1,
+          "column": 2,
+          "severity": 3,
+          "message": 4
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^\\[watch\\] build started",
+          "endsPattern": "^\\[watch\\] build finished"
+        }
+      },
       "isBackground": true,
       "presentation": {
         "reveal": "never"

@@ -31,7 +31,12 @@ const DEFAULT_IGNORE = [
 const configCache = new Map<string, PushUpConfig>();
 
 export function findConfig(filePath: string): string | undefined {
-  let dir = path.dirname(filePath);
+  let dir: string;
+  try {
+    dir = fs.statSync(filePath).isDirectory() ? filePath : path.dirname(filePath);
+  } catch {
+    dir = path.dirname(filePath);
+  }
   const root = path.parse(dir).root;
   while (true) {
     const candidate = path.join(dir, CONFIG_FILENAME);

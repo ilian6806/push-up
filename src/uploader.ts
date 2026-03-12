@@ -9,6 +9,7 @@ export interface IUploader {
   isConnected(): boolean;
   uploadFile(localPath: string, remotePath: string): Promise<void>;
   downloadFile(remotePath: string, localPath: string): Promise<void>;
+  deleteFile(remotePath: string): Promise<void>;
   ensureDir(remotePath: string): Promise<void>;
   listDir(remotePath: string): Promise<FileEntry[]>;
 }
@@ -24,6 +25,7 @@ export abstract class BaseUploader implements IUploader {
   abstract isConnected(): boolean;
   abstract uploadFile(localPath: string, remotePath: string): Promise<void>;
   abstract downloadFile(remotePath: string, localPath: string): Promise<void>;
+  abstract deleteFile(remotePath: string): Promise<void>;
   abstract ensureDir(remotePath: string): Promise<void>;
   abstract listDir(remotePath: string): Promise<FileEntry[]>;
 

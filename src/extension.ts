@@ -16,26 +16,31 @@ import { IUploader } from "./uploader";
 import { SftpUploader } from "./sftp-uploader";
 import { FtpUploader } from "./ftp-uploader";
 import { toRemotePath, toLocalPath, toRelativePath, collectFiles, collectRemoteFiles } from "./utils";
+import { FolderWatcher } from "./folder-watcher";
 
 let logger: Logger;
 let statusBar: StatusBar;
 const uploaderPool = new Map<string, IUploader>();
 const ignorePool = new Map<string, IgnoreChecker>();
 const passwordCache = new Map<string, string>();
+const folderWatchers = new Map<string, FolderWatcher>();
 
 export function activate(context: vscode.ExtensionContext): void {
   logger = new Logger();
   statusBar = new StatusBar();
 
   const configWatcher = createConfigWatcher();
-  configWatcher.onDidChange(() => {
+  configWatcher.onDidChange((uri) => {
     ignorePool.clear();
+    rebuildFolderWatcher(uri.fsPath);
   });
-  configWatcher.onDidCreate(() => {
+  configWatcher.onDidCreate((uri) => {
     ignorePool.clear();
+    rebuildFolderWatcher(uri.fsPath);
   });
-  configWatcher.onDidDelete(() => {
+  configWatcher.onDidDelete((uri) => {
     ignorePool.clear();
+    destroyFolderWatcher(uri.fsPath);
   });
 
   context.subscriptions.push(
@@ -51,10 +56,15 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.workspace.onDidSaveTextDocument(onDocumentSave)
   );
 
+  setupFolderWatchers();
   logger.info("PushUp activated.");
 }
 
 export function deactivate(): void {
+  for (const watcher of folderWatchers.values()) {
+    watcher.dispose();
+  }
+  folderWatchers.clear();
   for (const uploader of uploaderPool.values()) {
     uploader.disconnect().catch(() => {});
   }
@@ -82,6 +92,12 @@ async function onDocumentSave(doc: vscode.TextDocument): Promise<void> {
   }
 
   if (!config.uploadOnSave) {
+    return;
+  }
+
+  // Skip if the watcher already uploaded this file recently
+  const watcher = folderWatchers.get(config.configPath);
+  if (watcher && watcher.wasRecentlyUploaded(filePath)) {
     return;
   }
 
@@ -222,7 +238,7 @@ async function cmdUploadFolder(uri?: vscode.Uri): Promise<void> {
     return;
   }
 
-  const configPath = findConfig(folderPath);
+  const configPath = findConfig(folderPath, true);
   if (!configPath) {
     vscode.window.showErrorMessage("PushUp: No .pushup.json found for this folder.");
     return;
@@ -284,7 +300,7 @@ async function cmdDownloadFolder(uri?: vscode.Uri): Promise<void> {
     return;
   }
 
-  const configPath = findConfig(folderPath);
+  const configPath = findConfig(folderPath, true);
   if (!configPath) {
     vscode.window.showErrorMessage("PushUp: No .pushup.json found for this folder.");
     return;
@@ -424,6 +440,86 @@ function handleUploadError(config: PushUpConfig, message: string): void {
   if (uploader) {
     uploader.disconnect().catch(() => {});
     uploaderPool.delete(config.configPath);
+  }
+}
+
+// ── Folder Watchers ─────────────────────────────────────────────
+
+function setupFolderWatchers(): void {
+  const folders = vscode.workspace.workspaceFolders;
+  if (!folders) {
+    return;
+  }
+  for (const folder of folders) {
+    const configPath = findConfig(folder.uri.fsPath, true);
+    if (configPath) {
+      createFolderWatcher(configPath);
+    }
+  }
+}
+
+function createFolderWatcher(configPath: string): void {
+  let config: PushUpConfig;
+  try {
+    config = loadConfig(configPath);
+  } catch {
+    return;
+  }
+
+  if (config.watchFolders.length === 0) {
+    return;
+  }
+
+  const watcher = new FolderWatcher({
+    config,
+    uploadFn: (filePath) => uploadFileFromWatcher(filePath, config),
+    deleteFn: (filePath) => deleteFileFromWatcher(filePath, config),
+    getIgnoreChecker: () => getIgnoreChecker(config),
+    logger,
+  });
+
+  watcher.start();
+  folderWatchers.set(configPath, watcher);
+}
+
+async function uploadFileFromWatcher(filePath: string, config: PushUpConfig): Promise<boolean> {
+  const remotePath = toRemotePath(filePath, config);
+  const remoteDir = path.posix.dirname(remotePath);
+  try {
+    statusBar.uploading();
+    const uploader = await getUploader(config);
+    await uploader.ensureDir(remoteDir);
+    await uploader.uploadFile(filePath, remotePath);
+    statusBar.success();
+    return true;
+  } catch (err) {
+    handleUploadError(config, `Watch upload failed for ${toRelativePath(filePath, config)}: ${err}`);
+    return false;
+  }
+}
+
+async function deleteFileFromWatcher(filePath: string, config: PushUpConfig): Promise<boolean> {
+  const remotePath = toRemotePath(filePath, config);
+  try {
+    const uploader = await getUploader(config);
+    await uploader.deleteFile(remotePath);
+    return true;
+  } catch (err) {
+    handleUploadError(config, `Watch delete failed for ${toRelativePath(filePath, config)}: ${err}`);
+    return false;
+  }
+}
+
+function rebuildFolderWatcher(configPath: string): void {
+  destroyFolderWatcher(configPath);
+  createFolderWatcher(configPath);
+}
+
+function destroyFolderWatcher(configPath: string): void {
+  const existing = folderWatchers.get(configPath);
+  if (existing) {
+    existing.dispose();
+    folderWatchers.delete(configPath);
   }
 }
 

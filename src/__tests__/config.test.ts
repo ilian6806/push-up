@@ -170,6 +170,40 @@ describe("loadConfig / validateConfig", () => {
     expect(() => loadConfig("/bad4/.pushup.json")).toThrow('Invalid protocol "http"');
   });
 
+  it("defaults watchFolders to empty array when absent", () => {
+    vi.mocked(fs.readFileSync).mockReturnValue(validFtp);
+    const config = loadConfig("/wf-absent/.pushup.json");
+    expect(config.watchFolders).toEqual([]);
+  });
+
+  it("preserves valid watchFolders entries", () => {
+    vi.mocked(fs.readFileSync).mockReturnValue(
+      JSON.stringify({
+        protocol: "sftp",
+        host: "h",
+        username: "u",
+        remotePath: "/r",
+        watchFolders: ["css", "dist/assets"],
+      })
+    );
+    const config = loadConfig("/wf-valid/.pushup.json");
+    expect(config.watchFolders).toEqual(["css", "dist/assets"]);
+  });
+
+  it("filters out non-string and empty watchFolders entries", () => {
+    vi.mocked(fs.readFileSync).mockReturnValue(
+      JSON.stringify({
+        protocol: "sftp",
+        host: "h",
+        username: "u",
+        remotePath: "/r",
+        watchFolders: ["css", 123, "", null, "dist"],
+      })
+    );
+    const config = loadConfig("/wf-filter/.pushup.json");
+    expect(config.watchFolders).toEqual(["css", "dist"]);
+  });
+
   it("caches config on second call", () => {
     vi.mocked(fs.readFileSync).mockReturnValue(validSftp);
     loadConfig("/cached/.pushup.json");

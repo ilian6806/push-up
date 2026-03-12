@@ -7,6 +7,7 @@ const mockFtpClient = {
   close: vi.fn(),
   uploadFrom: vi.fn(),
   downloadTo: vi.fn(),
+  remove: vi.fn(),
   ensureDir: vi.fn(),
   list: vi.fn(),
   cd: vi.fn(),
@@ -77,6 +78,12 @@ describe("FtpUploader", () => {
     const uploader = new FtpUploader(makeConfig());
     await uploader.downloadFile("/remote/file.txt", "/local/file.txt");
     expect(mockFtpClient.downloadTo).toHaveBeenCalledWith("/local/file.txt", "/remote/file.txt");
+  });
+
+  it("deleteFile() delegates to client.remove", async () => {
+    const uploader = new FtpUploader(makeConfig());
+    await uploader.deleteFile("/public/file.txt");
+    expect(mockFtpClient.remove).toHaveBeenCalledWith("/public/file.txt");
   });
 
   it("listDir() maps type 2 to isDirectory: true", async () => {

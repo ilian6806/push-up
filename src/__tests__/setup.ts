@@ -23,6 +23,15 @@ export const mockFileSystemWatcher = {
   dispose: vi.fn(),
 };
 
+export function createMockFileSystemWatcher() {
+  return {
+    onDidChange: vi.fn(),
+    onDidCreate: vi.fn(),
+    onDidDelete: vi.fn(),
+    dispose: vi.fn(),
+  };
+}
+
 // ── Mock the virtual 'vscode' module ──
 
 vi.mock("vscode", () => ({
@@ -39,7 +48,7 @@ vi.mock("vscode", () => ({
     withProgress: vi.fn(),
   },
   workspace: {
-    createFileSystemWatcher: vi.fn(() => mockFileSystemWatcher),
+    createFileSystemWatcher: vi.fn(() => createMockFileSystemWatcher()),
     workspaceFolders: undefined,
     openTextDocument: vi.fn(),
     onDidSaveTextDocument: vi.fn(),
@@ -57,4 +66,5 @@ vi.mock("vscode", () => ({
   Uri: {
     file: (f: string) => ({ fsPath: f }),
   },
+  RelativePattern: vi.fn((base: string, pattern: string) => ({ base, pattern })),
 }));

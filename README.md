@@ -5,6 +5,7 @@ Auto-upload files to FTP/SFTP servers on save. Manual upload and download of fil
 ## Features
 
 - **Upload on save** — automatically uploads files when you save
+- **Watch folders** — auto-upload files changed by external tools (Sass, webpack, etc.)
 - **SFTP & FTP** — supports both protocols
 - **Context menus** — right-click files or folders to upload/download
 - **Ignore patterns** — glob patterns to skip files (uses picomatch)
@@ -50,6 +51,7 @@ Create a `.pushup.json` in your project root:
 | `passphrase` | No | — | Passphrase for private key |
 | `remotePath` | Yes | — | Remote directory path |
 | `uploadOnSave` | No | `true` | Auto-upload on file save |
+| `watchFolders` | No | `[]` | Folders to watch for external changes (relative to project root) |
 | `ignore` | No | see below | Glob patterns to ignore |
 
 **Default ignore patterns** (always included): `.git/**`, `.vscode/**`, `node_modules/**`, `.pushup.json`

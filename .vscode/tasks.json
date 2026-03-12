@@ -8,12 +8,12 @@
         "owner": "esbuild",
         "fileLocation": "absolute",
         "pattern": {
-          "regexp": "^>.+:(\\d+):(\\d+):\\s+(warning|error):\\s+(.+)$",
-          "file": 0,
-          "line": 1,
-          "column": 2,
-          "severity": 3,
-          "message": 4
+          "regexp": "^(.+):(\\d+):(\\d+):\\s+(warning|error):\\s+(.+)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
         },
         "background": {
           "activeOnStart": true,

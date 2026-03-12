@@ -44,6 +44,11 @@ export class FtpUploader extends BaseUploader {
     await this.client.downloadTo(localPath, remotePath);
   }
 
+  async deleteFile(remotePath: string): Promise<void> {
+    this.resetIdleTimer();
+    await this.client.remove(remotePath);
+  }
+
   async ensureDir(remotePath: string): Promise<void> {
     this.resetIdleTimer();
     await this.client.ensureDir(remotePath);

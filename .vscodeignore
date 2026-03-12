@@ -7,3 +7,6 @@ esbuild.js
 .gitignore
 .claude/
 .vscode/
+CONTRIBUTING.md
+AGENTS.md
+CLAUDE.md

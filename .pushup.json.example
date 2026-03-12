@@ -7,6 +7,7 @@
   "privateKeyPath": "",
   "remotePath": "/var/www/html",
   "uploadOnSave": true,
+  "watchFolders": ["css"],
   "ignore": [
     ".git/**",
     "node_modules/**",

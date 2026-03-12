@@ -13,6 +13,7 @@ export interface PushUpConfig {
   remotePath: string;
   uploadOnSave: boolean;
   ignore: string[];
+  watchFolders: string[];
   /** Absolute path to the .pushup.json file */
   configPath: string;
   /** Directory containing .pushup.json */
@@ -30,13 +31,8 @@ const DEFAULT_IGNORE = [
 
 const configCache = new Map<string, PushUpConfig>();
 
-export function findConfig(filePath: string): string | undefined {
-  let dir: string;
-  try {
-    dir = fs.statSync(filePath).isDirectory() ? filePath : path.dirname(filePath);
-  } catch {
-    dir = path.dirname(filePath);
-  }
+export function findConfig(filePath: string, fromDir = false): string | undefined {
+  let dir = fromDir ? filePath : path.dirname(filePath);
   const root = path.parse(dir).root;
   while (true) {
     const candidate = path.join(dir, CONFIG_FILENAME);
@@ -97,6 +93,9 @@ function validateConfig(json: Record<string, unknown>, configPath: string): Push
     remotePath,
     uploadOnSave: json.uploadOnSave !== false,
     ignore: Array.isArray(json.ignore) ? [...DEFAULT_IGNORE, ...(json.ignore as string[])] : DEFAULT_IGNORE,
+    watchFolders: Array.isArray(json.watchFolders)
+      ? (json.watchFolders as unknown[]).filter((f): f is string => typeof f === "string" && f.length > 0)
+      : [],
     configPath,
     localRoot: path.dirname(configPath),
   };

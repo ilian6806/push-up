@@ -12,9 +12,11 @@ Then open the project in VS Code and press **F5**. This launches an Extension De
 
 > The extension activates only when a `.pushup.json` file exists in the workspace. To test, create one in the dev host's open folder.
 
-## Test Commands
+## Build & Test Commands
 
 ```bash
+npm run compile       # Type-check + bundle
+npm run check-types   # Type-check only
 npm test              # Run all unit tests
 npm run test:watch    # Watch mode
 npm run test:coverage # Tests with coverage report

@@ -8,6 +8,7 @@ const mockSftpClient = {
   end: vi.fn(),
   put: vi.fn(),
   get: vi.fn(),
+  delete: vi.fn(),
   mkdir: vi.fn(),
   list: vi.fn(),
   sftp: null as unknown,
@@ -92,6 +93,12 @@ describe("SftpUploader", () => {
     const uploader = new SftpUploader(makeConfig());
     await uploader.ensureDir("/remote/path");
     expect(mockSftpClient.mkdir).toHaveBeenCalledWith("/remote/path", true);
+  });
+
+  it("deleteFile() delegates to client.delete", async () => {
+    const uploader = new SftpUploader(makeConfig());
+    await uploader.deleteFile("/remote/file.txt");
+    expect(mockSftpClient.delete).toHaveBeenCalledWith("/remote/file.txt");
   });
 
   it("listDir() maps entries correctly", async () => {

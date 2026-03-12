@@ -55,6 +55,11 @@ export class SftpUploader extends BaseUploader {
     await this.client.get(remotePath, localPath);
   }
 
+  async deleteFile(remotePath: string): Promise<void> {
+    this.resetIdleTimer();
+    await this.client.delete(remotePath);
+  }
+
   async ensureDir(remotePath: string): Promise<void> {
     this.resetIdleTimer();
     await this.client.mkdir(remotePath, true);

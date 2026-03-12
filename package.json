@@ -10,11 +10,19 @@
     "url": "https://github.com/ilian6806/push-up"
   },
   "icon": "images/icon.png",
+  "homepage": "https://github.com/ilian6806/push-up",
+  "bugs": {
+    "url": "https://github.com/ilian6806/push-up/issues"
+  },
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
   "engines": {
     "vscode": "^1.85.0"
   },
   "categories": [
-    "Other"
+    "Deployment"
   ],
   "keywords": [
     "ftp",

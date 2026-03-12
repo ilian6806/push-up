@@ -33,6 +33,7 @@ Create a `.pushup.json` in your project root:
   "privateKeyPath": "",
   "remotePath": "/var/www/html",
   "uploadOnSave": true,
+  "watchFolders": ["css", "js"],
   "ignore": [
     ".git/**",
     "node_modules/**"
@@ -74,10 +75,19 @@ Create a `.pushup.json` in your project root:
 - **Files not uploading on save** — Verify `uploadOnSave` is `true` and the file doesn't match an ignore pattern.
 - **Password prompt keeps appearing** — Passwords are cached for the session. If the connection drops, you may be re-prompted.
 
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for dev setup and guidelines.
-
 ## License
 
 MIT
+
+## Contributing
+
+Feel free to submit PRs to develop!
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for dev setup and guidelines.
+
+<p align="center">
+  ...and you can always buy me a :beer:! <br/><br/>
+  <a href="https://www.paypal.com/paypalme/ilian6806" target="_blank">
+    <img src="https://img.shields.io/badge/Donate-PayPal-green.svg" alt="Donate with PayPal"/>
+  </a>
+</p>

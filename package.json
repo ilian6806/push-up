@@ -5,6 +5,10 @@
   "version": "0.1.0",
   "publisher": "ilian-iliev",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ilian-iliev/push-up"
+  },
   "engines": {
     "vscode": "^1.85.0"
   },

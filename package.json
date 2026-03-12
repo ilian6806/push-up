@@ -2,7 +2,7 @@
   "name": "pushup",
   "displayName": "PushUp",
   "description": "Auto-upload files to FTP/SFTP servers on save, with manual upload/download of files and folders.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "ilianiliev",
   "license": "MIT",
   "repository": {
